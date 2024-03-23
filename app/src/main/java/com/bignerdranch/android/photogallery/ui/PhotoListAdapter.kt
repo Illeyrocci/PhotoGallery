@@ -2,6 +2,8 @@ package com.bignerdranch.android.photogallery.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.bignerdranch.android.photogallery.R
@@ -18,9 +20,7 @@ class PhotoViewHolder(
     }
 }
 
-class PhotoListAdapter(
-    private val galleryItems: List<GalleryItem>
-) : RecyclerView.Adapter<PhotoViewHolder>() {
+class PhotoListAdapter : PagingDataAdapter<GalleryItem, PhotoViewHolder>(PHOTO_COMPARATOR) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -31,9 +31,17 @@ class PhotoListAdapter(
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        val item = galleryItems[position]
-        holder.bind(item)
+        val item = getItem(position)
+        item?.let { holder.bind(it) }
     }
 
-    override fun getItemCount() = galleryItems.size
+    companion object {
+        private val PHOTO_COMPARATOR = object : DiffUtil.ItemCallback<GalleryItem>() {
+            override fun areItemsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean =
+                oldItem == newItem
+        }
+    }
 }

@@ -11,9 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bignerdranch.android.photogallery.Injection
-import com.bignerdranch.android.photogallery.api.FlickrApi
-import com.bignerdranch.android.photogallery.data.PhotoRepository
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class PhotoGalleryFragment : Fragment() {
@@ -27,6 +26,8 @@ class PhotoGalleryFragment : Fragment() {
         Injection.provideViewModelFactory(requireContext())
     }
 
+    private val adapter = PhotoListAdapter()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +36,7 @@ class PhotoGalleryFragment : Fragment() {
         _binding =
             FragmentPhotoGalleryBinding.inflate(inflater, container, false)
         binding.photoGrid.layoutManager = GridLayoutManager(context, 3)
+        binding.photoGrid.adapter = adapter
         return binding.root
     }
 
@@ -43,9 +45,7 @@ class PhotoGalleryFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                photoGalleryViewModel.galleryItems.collect { items ->
-                    binding.photoGrid.adapter = PhotoListAdapter(items)
-                }
+                photoGalleryViewModel.pagingDataFlow.collectLatest(adapter::submitData)
             }
         }
     }

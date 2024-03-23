@@ -4,6 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 private const val API_KEY = "Your API key"
 
@@ -15,7 +16,9 @@ interface FlickrApi {
                 "&nojsoncallback=1" +
                 "&extras=url_s"
     )
-    suspend fun fetchPhotos(): FlickrResponse
+    suspend fun fetchPhotos(
+        @Query("page") pageIndex: Int
+    ): FlickrResponse
 
     companion object {
         private const val BASE_URL = "https://api.flickr.com/"
