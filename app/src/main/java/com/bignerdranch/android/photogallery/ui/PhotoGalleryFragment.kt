@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery
+package com.bignerdranch.android.photogallery.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bignerdranch.android.photogallery.Injection
+import com.bignerdranch.android.photogallery.api.FlickrApi
+import com.bignerdranch.android.photogallery.data.PhotoRepository
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
 import kotlinx.coroutines.launch
 
@@ -20,7 +23,9 @@ class PhotoGalleryFragment : Fragment() {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
-    private val photoGalleryViewModel: PhotoGalleryViewModel by viewModels()
+    private val photoGalleryViewModel: PhotoGalleryViewModel by viewModels {
+        Injection.provideViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
