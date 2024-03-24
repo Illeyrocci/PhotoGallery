@@ -36,7 +36,10 @@ class PhotoGalleryFragment : Fragment() {
         _binding =
             FragmentPhotoGalleryBinding.inflate(inflater, container, false)
         binding.photoGrid.layoutManager = GridLayoutManager(context, 3)
-        binding.photoGrid.adapter = adapter
+        binding.photoGrid.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PhotoLoadStateAdapter { adapter.retry() },
+            footer = PhotoLoadStateAdapter { adapter.retry() }
+        )
         return binding.root
     }
 
