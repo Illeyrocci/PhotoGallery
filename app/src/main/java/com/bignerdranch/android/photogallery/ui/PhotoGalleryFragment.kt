@@ -30,6 +30,7 @@ class PhotoGalleryFragment : Fragment() {
     }
 
     private val adapter = PhotoListAdapter()
+    private val headerAdapter = PhotoLoadStateAdapter { adapter.retry() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +41,7 @@ class PhotoGalleryFragment : Fragment() {
             FragmentPhotoGalleryBinding.inflate(inflater, container, false)
         binding.photoGrid.layoutManager = GridLayoutManager(context, 3)
         binding.photoGrid.adapter = adapter.withLoadStateHeaderAndFooter(
-            header = PhotoLoadStateAdapter { adapter.retry() },
+            header = headerAdapter,
             footer = PhotoLoadStateAdapter { adapter.retry() }
         )
         return binding.root
@@ -53,12 +54,20 @@ class PhotoGalleryFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     adapter.loadStateFlow.collect { loadState ->
-                        val isListEmpty =
+                        emptyList.isVisible =
                             loadState.refresh is LoadState.NotLoading && adapter.itemCount == 0
-                        emptyList.isVisible = isListEmpty
-                        photoGrid.isVisible = !isListEmpty
-                        progressBar.isVisible = loadState.source.refresh is LoadState.Loading
-                        retryButton.isVisible = loadState.source.refresh is LoadState.Error
+                        photoGrid.isVisible =
+                            loadState.source.refresh is LoadState.NotLoading || loadState.mediator?.refresh is LoadState.NotLoading
+                        progressBar.isVisible = loadState.mediator?.refresh is LoadState.Loading
+                        retryButton.isVisible =
+                            loadState.mediator?.refresh is LoadState.Error && adapter.itemCount == 0
+
+                        // Show a retry header if there was an error refreshing, and items were previously
+                        // cached OR default to the default prepend state
+                        headerAdapter.loadState = loadState.mediator
+                            ?.refresh
+                            ?.takeIf { it is LoadState.Error && adapter.itemCount > 0 }
+                            ?: loadState.prepend
 
                         // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
                         val errorState = loadState.source.append as? LoadState.Error
