@@ -1,0 +1,3 @@
+This app was forked from [link](https://www.bignerdranch.com/android-5e-solutions) at /Resources/20. Making Network Requests and Displaying Images/Solution. (Apache 2.0 License)  
+My task were to complete "Challenge" after 20 chapter of book "Android Programming: The Big Nerd Ranch Guide" (fifth edition, first printing, June 2022) by Bryan Sills, Brian Gardner, Kristin Marsicano and Chris Stewart ([link](https://bignerdranch.com/books/android-programming-the-big-nerd-ranch-guide-5th-edition/)) by implementing paging for PhotoGallery.  
+***!The app needs you to apply for an API key!*** for Flickr Services on [link](https://www.flickr.com/services/api/misc.api_keys.html) and insert it in app/src/main/java/com/bignerdranch/android/photogallery/api/FlickrApi.kt file!  
